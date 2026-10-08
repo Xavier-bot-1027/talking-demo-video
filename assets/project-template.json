@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "project_id": "replace-project-id",
+  "version": "v1",
+  "brief": "brief.md",
+  "render": {
+    "width": 1280, "height": 720, "fps": 30,
+    "background": "0x15191f", "subtitle_band": 120,
+    "pip": {"x": 980, "y": 360, "width": 280, "height": 210},
+    "font_name": "sans-serif", "font_file": null, "font_size": 34,
+    "crf": 20, "preset": "medium", "audio_sample_rate": 48000
+  },
+  "assets": [],
+  "sources": [],
+  "segments": [],
+  "feedback": [],
+  "delivery": {"files": []}
+}

@@ -1,0 +1,24 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>视频审片</title>
+<style>body{font:16px/1.6 system-ui,sans-serif;background:#f3f1ec;color:#20252c;max-width:1040px;margin:24px auto;padding:0 20px}video{width:100%;background:#111}h1{margin-bottom:4px}button,a{margin:4px 8px 4px 0}button{padding:7px 12px;border:1px solid #bbc2c8;border-radius:6px;background:#fff}textarea{display:block;width:95%;min-height:150px;padding:12px}pre{white-space:pre-wrap;word-break:break-all;background:#fff;padding:16px}small{word-break:break-all}.warn{color:#a2420a}section{margin:24px 0}</style>
+<h1 id="title"></h1><div id="version"></div><small id="hash"></small><p id="playerStatus">等待加载播放器</p>
+<video id="video" controls preload="metadata"></video><div id="chapters"></div>
+<section><h2>资料与预览</h2><div id="files"></div></section>
+<section><h2>分层验收</h2><pre id="reviews"></pre><p class="warn">此页生成时只检查本地文件存在；播放器、章节、资料链接和反馈保留仍须在实际浏览器核对。</p></section>
+<section><h2>本版反馈</h2><button id="stamp">插入当前时间</button><textarea id="notes" placeholder="时间码 / 问题 / 修改意见"></textarea><p id="storage"></p><button id="download">导出反馈文本</button></section>
+<script>
+const data=__DATA__;
+const el=id=>document.getElementById(id);
+el('title').textContent=data.title;el('version').textContent='版本：'+data.version;el('hash').textContent='SHA256：'+data.sha256;
+const video=el('video');video.src=data.video;
+video.addEventListener('loadedmetadata',()=>{const d=video.duration;el('playerStatus').textContent='播放器时长 '+d.toFixed(3)+' 秒；工程 '+data.expectedDuration.toFixed(3)+' 秒'+(Math.abs(d-data.expectedDuration)>.2?'。警告：时长不符，请检查版本。':'。请核对画面版本及声音。')});
+video.addEventListener('error',()=>el('playerStatus').textContent='播放器加载失败，请检查文件位置、编码和浏览器访问权限。');
+for(const chapter of data.chapters){const b=document.createElement('button');b.textContent=chapter.time.toFixed(2)+'s '+chapter.label;b.onclick=()=>{video.currentTime=chapter.time};el('chapters').appendChild(b)}
+for(const file of data.files){const a=document.createElement('a');a.href=file.url;a.textContent=file.label;a.target='_blank';a.rel='noopener';el('files').appendChild(a)}
+el('reviews').textContent=JSON.stringify(data.reviews,null,2);
+const key='talking-demo-feedback:'+data.title+':'+data.sha256, notes=el('notes');
+let storageOk=true;
+try{notes.value=localStorage.getItem(key)||'';localStorage.setItem(key,notes.value);el('storage').textContent='反馈只保存在本浏览器；交付修改意见请导出文本。'}catch(e){storageOk=false;el('storage').textContent='浏览器不允许本地保存，刷新可能丢失；请及时导出反馈。'}
+notes.addEventListener('input',()=>{if(storageOk){try{localStorage.setItem(key,notes.value)}catch(e){storageOk=false;el('storage').textContent='本地保存失败，请立即导出反馈。'}}});
+el('stamp').onclick=()=>{notes.value+='\n['+video.currentTime.toFixed(2)+'s] ';notes.dispatchEvent(new Event('input'));notes.focus()};
+el('download').onclick=()=>{const body=data.title+'\n版本：'+data.version+'\nSHA256：'+data.sha256+'\n\n'+notes.value;const url=URL.createObjectURL(new Blob([body],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='review-'+data.version+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)};
+</script></html>

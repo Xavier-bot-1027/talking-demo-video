@@ -1,0 +1,13 @@
+interface:
+  display_name: 口播与操作演示制作
+  short_description: 以真实口播与录屏为主线，制作、增量返修并诚实验收可编辑视频
+  default_prompt: 使用 $talking-demo-video，结合我的口播、录屏和最新反馈完成一版可审片的视频。
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
